@@ -1,5 +1,7 @@
 import apify from "../../apify.app.mjs";
-import { ACTOR_ID } from "../../common/constants.mjs";
+import {
+  ACTOR_ID, ACTOR_JOB_STATUSES, ACTOR_JOB_TERMINAL_STATUSES,
+} from "../../common/constants.mjs";
 
 export default {
   key: "apify-scrape-single-url",
@@ -52,33 +54,30 @@ export default {
       },
     });
 
-    console.log("Started Actor run:", startActorResponse);
-
     const {
       data: {
         id: runId, defaultDatasetId,
       },
     } = startActorResponse;
-    console.log("Actor Run ID:", runId);
-    console.log("Dataset ID:", defaultDatasetId);
 
     let actorRunStatus = null;
     let retries = 0;
     const maxRetries = 30;
     const delay = 5 * 1000;
 
-    while (actorRunStatus !== "SUCCEEDED" && actorRunStatus !== "FAILED" && retries < maxRetries) {
+    while ((!actorRunStatus || !ACTOR_JOB_TERMINAL_STATUSES.includes(actorRunStatus))
+          && retries < maxRetries
+    ) {
       await new Promise((resolve) => setTimeout(resolve, delay));
       const runDetails = await this.apify.getActorRun({
         $,
         runId,
       });
       actorRunStatus = runDetails.data.status;
-      console.log(`Actor run status: ${actorRunStatus} (retry: ${retries + 1}/${maxRetries})`);
       retries++;
     }
 
-    if (actorRunStatus !== "SUCCEEDED") {
+    if (actorRunStatus !== ACTOR_JOB_STATUSES.SUCCEEDED) {
       throw new Error(`Actor run did not succeed. Final status: ${actorRunStatus}`);
     }
 
