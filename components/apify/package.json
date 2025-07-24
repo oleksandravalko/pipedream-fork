@@ -13,6 +13,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@apify/consts": "^2.41.0",
     "@pipedream/platform": "^3.0.3"
   }
 }
