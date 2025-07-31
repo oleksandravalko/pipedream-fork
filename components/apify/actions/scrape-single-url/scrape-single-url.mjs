@@ -1,7 +1,8 @@
 import apify from "../../apify.app.mjs";
+import { ACTOR_ID } from "../../common/constants.mjs";
 import {
-  ACTOR_ID, ACTOR_JOB_STATUSES, ACTOR_JOB_TERMINAL_STATUSES,
-} from "../../common/constants.mjs";
+  ACTOR_JOB_STATUSES, ACTOR_JOB_TERMINAL_STATUSES,
+} from "@apify/consts";
 
 export default {
   key: "apify-scrape-single-url",
@@ -63,7 +64,7 @@ export default {
     let actorRunStatus = null;
     let retries = 0;
     const maxRetries = 30;
-    const delay = 5 * 1000;
+    const delay = 1000;
 
     while ((!actorRunStatus || !ACTOR_JOB_TERMINAL_STATUSES.includes(actorRunStatus))
           && retries < maxRetries
